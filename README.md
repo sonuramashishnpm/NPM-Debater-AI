@@ -33,5 +33,5 @@ An interactive, real-time debate platform where four powerful LLMs (**Llama 3.2,
 
 1. **Clone the repo:**
    ```bash
-   git clone https://github.com
+   git clone https://github.com/sonuramashishnpm/NPM_Debater-AI
    cd npm-debate-ai
