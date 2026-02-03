@@ -13,10 +13,11 @@ An interactive, real-time debate platform where four powerful LLMs (**Llama 3.2,
 ## 🚀 Features
 
 -   **Real-Time NDJSON Streaming:** Uses a custom `yield` architecture to push AI responses to the frontend one-by-one. No more waiting for the entire debate to finish!
--   **Multi-Model Intelligence:** Combines the unique personalities of Llama, Qwen, Mistral, and Vicuna.
+-   **Multi-Model Intelligence:** Using `npmai` we combined the unique personalities of Llama, Qwen, Mistral, and Vicuna.
 -   **Sequential Context:** Each AI listens to the previous speakers before formulating its unique point of view.
 -   **Persistent Memory:** Integrated memory management that saves debate history to disk, allowing AIs to remember previous rounds.
 -   **Cyberpunk Glassmorphism UI:** A sleek, dark-themed interface with background video support and responsive grid layouts.
+-   **No Signup/Sigin:* We believe that we are providing in free and to save your time and privacy we do not ask your any personal information.
 
 ---
 
