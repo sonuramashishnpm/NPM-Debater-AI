@@ -24,7 +24,7 @@ An interactive, real-time debate platform where four powerful LLMs (**Llama 3.2,
 ## 🛠️ Tech Stack
 
 -   **Backend:** [Flask](https://flask.palletsprojects.com) (Python)
--   **AI Core:** [Ollama](https://ollama.com) & `npmai` library
+-   **AI Core:** [`npmai`](https://npmai.netlify.app) (Docs) `npmai` library
 -   **Streaming:** `stream_with_context` (Server-Sent Data)
 -   **Frontend:** JavaScript [Fetch ReadableStream API](https://developer.mozilla.org), HTML5, CSS3
 
