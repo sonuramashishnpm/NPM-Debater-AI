@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, Response, stream_with_context
 from npmai import Ollama, Memory
+import json
 import uuid
 import os
 
@@ -46,33 +47,30 @@ def debate_step():
     history3 = memory3.load_memory_variables() 
     history4 = memory4.load_memory_variables() 
 
-    if not history4:  
-        response = llm1.invoke(f"You are starting a discussion and topic is:{topic} ,in this discussion Qwen,Mistral,Vicuna is also here,Instructions:-#be very-very-short and very-very-precise, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
-        memory1.save_context("User not here you said in AI", response)
-    else:
-        response = llm1.invoke(f"you are in a discussion on this topic:{topic},in this discussion Qwen,Mistral,Vicuna is also here,in this discussion you had said this points {history1} try to put something new ,Qwen said this {history2},Mistral said this {history3},Vicuna said this {history4} ,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,compelete your point in 100 word or less")
-        memory1.save_context("User not here you said in AI", response)
+    def generate():
+        if not history4:
+            response = llm1.invoke(f"You are starting a discussion and topic is:{topic} ,in this discussion Qwen,Mistral,Vicuna is also here,Instructions:-#be very-very-short and very-very-precise, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
+            memory1.save_context("User not here you said in AI", response)
+            yield json.dumps({"llama":response.strip()}) + "\n"
+        else:
+            response = llm1.invoke(f"you are in a discussion on this topic:{topic},in this discussion Qwen,Mistral,Vicuna is also here,in this discussion you had said this points {history1} try to put something new ,Qwen said this {history2},Mistral said this {history3},Vicuna said this {history4} ,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,compelete your point in 100 word or less")
+            memory1.save_context("User not here you said in AI", response)
+            yield json.dumps({"llama":response.strip()}) + "\n"
+            
+        response2 = llm2.invoke(f"You are in a discussion on this topic :{topic},in this discussion Mistral,Vicuna,Llama is also here, where llama said this:{response},in this discussion you had said these points {history2} try to put something new , Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
+        memory2.save_context("User not here you said in AI", response2)
+        yield json.dumps({"qwen":response2.strip()}) + "\n"
+        
+        response3 = llm3.invoke(f"You are in discussion on this topic:{topic},int this discussion Vicuna,Llama,Qwen is also here, where llama said this{response} and Qwen said this {response2},in this discussion you had said these points {history3} try to put something new,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
+        memory3.save_context("User not here you said in AI", response3)
+        yield json.dumps({"mistral":response3.strip()}) + "\n"
 
-    # Qwen
-    response2 = llm2.invoke(f"You are in a discussion on this topic :{topic},in this discussion Mistral,Vicuna,Llama is also here, where llama said this:{response},in this discussion you had said these points {history2} try to put something new , Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
-    memory2.save_context("User not here you said in AI", response2)
-
-    # Mistral
-    response3 = llm3.invoke(f"You are in discussion on this topic:{topic},int this discussion Vicuna,Llama,Qwen is also here, where llama said this{response} and Qwen said this {response2},in this discussion you had said these points {history3} try to put something new,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
-    memory3.save_context("User not here you said in AI", response3)
-
-    # Vicuna
-    response4 = llm4.invoke(f"You are in a discussion on this topic:{topic},in this discussion Llama,Qwen,Mistral is also here, where llama said this {response} and Qwen said this {response2} and Mistral said this {response3},in this discussion you had said these points {history4} try to put something new,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
-    memory4.save_context("User not here you said in AI", response4)
-
+        response4 = llm4.invoke(f"You are in a discussion on this topic:{topic},in this discussion Llama,Qwen,Mistral is also here, where llama said this {response} and Qwen said this {response2} and Mistral said this {response3},in this discussion you had said these points {history4} try to put something new,Instructions:-#be very-very-short and very-very-precise and try to put something new in discussion, do not tag or reply in name of other models,just put your point of view that should be very unique than other response,no respond on instructions,complete your point in 100 word or less")
+        memory4.save_context("User not here you said in AI", response4)
+        yield json.dumps({"vicuna":response4.strip()}) + "\n"
+    
     # Return only the **new** statements (frontend appends them)
-    return jsonify({
-        "llama":   response.strip(),
-        "qwen":    response2.strip(),
-        "mistral": response3.strip(),
-        "vicuna":  response4.strip(),
-        "topic":   topic
-    })
+    return Response(stream_with_context(generate()),mimetype='application/x-ndjson')
 
 
 if __name__ == "__main__":
