@@ -7,13 +7,13 @@ import os
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "158bcd2e3f9b0e4b6a2db45fc48b461a65498478d0fbe9441fe0314bf534c23c")
 
-llm1 = Ollama(model="llama3.2", temperature=0.4)
+llm1 = Ollama(model="llama3.2", temperature=0.85)
 
-llm2 = Ollama(model="qwen2.5-coder:7b", temperature=0.5)
+llm2 = Ollama(model="qwen2.5-coder:7b", temperature=0.75)
 
-llm3 = Ollama(model="mistral:7b", temperature=0.5)
+llm3 = Ollama(model="mistral:7b", temperature=0.80)
 
-llm4 = Ollama(model="vicuna:7b", temperature=0.5)
+llm4 = Ollama(model="vicuna:7b", temperature=0.80)
 
 @app.route("/")
 def index():
