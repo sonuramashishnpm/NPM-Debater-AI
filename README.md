@@ -21,6 +21,10 @@ An interactive, real-time debate platform where four powerful LLMs (**Llama 3.2,
 
 ---
 
+## Workflow:-
+
+<img src="https://i.ibb.co/nWScwNr/NPM-Debate-AI.png" alt="Example Screenshot" width="700" style="display: block; margin: 0 auto; margin-left:20px">
+
 ## 🛠️ Tech Stack
 
 -   **Backend:** [Flask](https://flask.palletsprojects.com) (Python)
